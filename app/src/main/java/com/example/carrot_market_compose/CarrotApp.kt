@@ -1,26 +1,51 @@
 package com.example.carrot_market_compose
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
+import com.example.carrot_market_compose.ui.theme.CarrotmarketcomposeTheme
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
@@ -30,16 +55,7 @@ fun CarrotApp() {
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
             Home(
-                posts = flowOf(
-                    PagingData.from(
-                        listOf(
-                            fakePost.copy(),
-                            fakePost.copy(),
-                            fakePost.copy(),
-                            fakePost.copy()
-                        )
-                    )
-                ),
+                posts = fakePostList,
                 onMenuClick = {},
                 onNoticeClick = {},
                 onPostClick = {},
@@ -53,7 +69,11 @@ fun CarrotApp() {
 data class Post(
     val id: String,
     val title: String,
-    val imgUrl: String
+    val imgUrl: String,
+    val location: String,
+    val createdTime: String,
+    val price: String,
+    val likeCount: Int
 )
 
 @Composable
@@ -65,6 +85,7 @@ fun Home(
     onPostClick: (Post) -> Unit = {}
 ) {
     Scaffold(
+        modifier = Modifier.background(color = Color.White),
         topBar = {
             HomeTobBar(onNoticeClick = onNoticeClick)
         }
@@ -85,35 +106,87 @@ fun Home(
                 PostListItem(post = photo) {
                     onPostClick(photo)
                 }
+                Divider(color = Color.DarkGray)
             }
         }
     }
 }
 
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PostListItem(
     post: Post,
     onPostClick: (Post) -> Unit
 ) {
-    Row(Modifier.fillMaxSize()) {
-        GlideImage(
+    Row(
+        Modifier
+            .fillMaxSize()
+            .padding(all = 10.dp)
+    ) {
+        AsyncImage(
             model = post.imgUrl,
+            placeholder = ColorPainter(Color.LightGray),
             contentDescription = null,
-            Modifier
-                .fillMaxHeight()
-                .width(dimensionResource(id = R.dimen.plant_item_image_height)),
-            contentScale = ContentScale.Crop
-        )
-        Text(
-            text = post.title,
-            textAlign = TextAlign.Center,
-            maxLines = 2,
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = dimensionResource(id = R.dimen.margin_normal))
-        )
+                .height(dimensionResource(id = R.dimen.post_item_size))
+                .width(dimensionResource(id = R.dimen.post_item_size))
+                .clip(RoundedCornerShape(size = 10.dp)),
+            contentScale = ContentScale.Crop,
+
+            )
+        Column(
+            modifier = Modifier.padding(start = 10.dp)
+        ) {
+            Text(
+                text = post.title,
+                maxLines = 2,
+                fontSize = 18.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+            Row {
+                Text(
+                    text = post.location,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .wrapContentSize(),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+
+                )
+                Spacer(modifier = Modifier.size(10.dp))
+                Text(
+                    text = post.createdTime,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .wrapContentSize(),
+                    fontSize = 14.sp,
+                    color = Color.DarkGray
+
+                )
+            }
+            Text(
+                text = post.price,
+                maxLines = 1,
+                modifier = Modifier.wrapContentSize(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp
+            )
+            Row(
+                modifier = Modifier.align(Alignment.End)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Favorite,
+                    tint = Color.DarkGray,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.size(5.dp))
+                Text(
+                    text = post.likeCount.toString(),
+                    color = Color.DarkGray
+                )
+            }
+        }
     }
 }
 
@@ -140,13 +213,46 @@ fun HomeTobBar(
 
 
 private val fakePost = Post(
-    id = "",
+    id = "1",
     title = "안녕하세요",
-    imgUrl = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fko.wikipedia.org%2Fwiki%2F%25EC%2582%25AC%25EA%25B3%25BC_%25ED%258C%258C%25EC%259D%25B4&psig=AOvVaw2bgBTtg4-ZVYRtePtPZ5Mm&ust=1682248174072000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCNCtkfmsvf4CFQAAAAAdAAAAABAD"
+    imgUrl = "https://www.itworld.co.kr/files/itworld/ITW_202207_01/14-inch-macbook-pro-2-100912448-orig-1-jpg.webp",
+    location = "관악구",
+    createdTime = "1초전",
+    price = "1,2000원",
+    likeCount = 2
 )
 
-@Preview
+private val fakePostList = flowOf(
+    PagingData.from(
+        listOf(
+            fakePost.copy(id = "1"),
+            fakePost.copy(id = "2"),
+            fakePost.copy(id = "3"),
+            fakePost.copy(id = "4"),
+            fakePost.copy(id = "5")
+        )
+    )
+)
+
+@Preview(showBackground = true)
+@Composable
+private fun HomePreview() {
+    CarrotmarketcomposeTheme {
+        Home(posts = fakePostList,
+            onPostClick = {},
+            onMenuClick = {},
+            onNoticeClick = {},
+            onSearchClick = {})
+    }
+
+}
+
+
+@Preview(showBackground = true)
 @Composable
 private fun PostListItemPreview() {
-    PostListItem(post = fakePost, onPostClick = {})
+    CarrotmarketcomposeTheme {
+        PostListItem(post = fakePost, onPostClick = {})
+    }
+
 }
