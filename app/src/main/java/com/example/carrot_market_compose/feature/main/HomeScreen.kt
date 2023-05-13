@@ -1,4 +1,4 @@
-package com.example.carrot_market_compose
+package com.example.carrot_market_compose.feature.main
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -33,7 +35,6 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,11 +58,14 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
+import com.example.carrot_market_compose.R
 import com.example.carrot_market_compose.data.Location
 import com.example.carrot_market_compose.data.Post
 import com.example.carrot_market_compose.data.fakePost
 import com.example.carrot_market_compose.data.fakePostList
 import com.example.carrot_market_compose.design.dim
+import com.example.carrot_market_compose.feature.main.data.BottomNavType
+import com.example.carrot_market_compose.noRippleClickable
 import com.example.carrot_market_compose.ui.theme.CarrotmarketcomposeTheme
 import kotlinx.coroutines.flow.Flow
 
@@ -86,6 +90,9 @@ fun HomeScreen(
                 onSearchClick = onSearchClick,
                 locations = listOf(Location("신림동"), Location("강서구"))
             )
+        },
+        bottomBar = {
+            HomeBottomNavigation()
         }
     ) { padding ->
         val pagingItems: LazyPagingItems<Post> = posts.collectAsLazyPagingItems()
@@ -108,6 +115,32 @@ fun HomeScreen(
     }
 
     DimScreen(isShowDim = isShowDim)
+}
+
+
+@Composable
+fun HomeBottomNavigation() {
+    var selectedItemIndex by remember { mutableStateOf(0) }
+    BottomNavigation {
+        BottomNavType.values().mapIndexed { index, type ->
+            val isSelected = index == selectedItemIndex
+            BottomNavigationItem(
+                selected = isSelected,
+                icon = {
+                    Icon(
+                        imageVector = if (isSelected) type.selectedImage else type.deselectedImage,
+                        contentDescription = null
+                    )
+                },
+                label = {
+                    Text(text = type.title)
+                },
+                onClick = {
+                    selectedItemIndex = index
+                }
+            )
+        }
+    }
 }
 
 @Composable
@@ -306,7 +339,7 @@ private fun DropDown(
 }
 
 @Composable
-private fun DropDownIcon(isShowDropDown : Boolean){
+private fun DropDownIcon(isShowDropDown: Boolean) {
     val degree: Float by animateFloatAsState(
         targetValue = if (isShowDropDown) 180f else 0f,
         animationSpec = tween(durationMillis = 500)
@@ -316,7 +349,7 @@ private fun DropDownIcon(isShowDropDown : Boolean){
         modifier = Modifier
             .wrapContentSize()
             .rotate(degree)
-    ){
+    ) {
         Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
     }
 
