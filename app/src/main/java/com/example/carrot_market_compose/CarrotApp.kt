@@ -11,7 +11,7 @@ fun CarrotApp() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "home") {
         composable("home") {
-            Home(
+            HomeScreen(
                 posts = fakePostList,
                 onMenuClick = {},
                 onNoticeClick = {},

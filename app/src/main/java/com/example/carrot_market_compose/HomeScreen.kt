@@ -59,7 +59,7 @@ import kotlinx.coroutines.flow.Flow
 
 
 @Composable
-fun Home(
+fun HomeScreen(
     posts: Flow<PagingData<Post>>,
     onNoticeClick: () -> Unit,
     onSearchClick: () -> Unit,
@@ -233,7 +233,7 @@ private fun DropDown(locations: List<Location>) {
     }
     if (showPopup) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.wrapContentSize(),
             contentAlignment = Alignment.Center
         ) {
             DropdownMenu(
@@ -258,7 +258,7 @@ private fun DropDown(locations: List<Location>) {
 @Composable
 private fun HomePreview() {
     CarrotmarketcomposeTheme {
-        Home(posts = fakePostList,
+        HomeScreen(posts = fakePostList,
             onPostClick = {},
             onMenuClick = {},
             onNoticeClick = {},
