@@ -44,6 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.paging.PagingData
@@ -218,34 +219,36 @@ fun HomeTobBar(
 private fun DropDown(locations: List<Location>) {
     var showPopup by remember { mutableStateOf(false) }
     val selectedIndex = remember { mutableStateOf(0) }
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.noRippleClickable { showPopup = true }
-    ) {
-        Text(
-            text = locations[selectedIndex.value].name,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
-        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
-    }
-    if (showPopup) {
-        Box(
-            modifier = Modifier.wrapContentSize(),
-            contentAlignment = Alignment.Center
+    Column {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.noRippleClickable { showPopup = true }
         ) {
-            DropdownMenu(
-                expanded = true,
-                onDismissRequest = { showPopup = false }
+            Text(
+                text = locations[selectedIndex.value].name,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+        }
+        if (showPopup) {
+            Box(
+                modifier = Modifier.wrapContentSize(),
+                contentAlignment = Alignment.Center
             ) {
-                locations.forEachIndexed { index, item ->
-                    DropdownMenuItem(onClick = {
-                        selectedIndex.value = index
-                        showPopup = false
-                    }) {
-                        Text(text = item.name)
+                DropdownMenu(
+                    offset = DpOffset(x = 0.dp, y = 10.dp),
+                    expanded = true,
+                    onDismissRequest = { showPopup = false }
+                ) {
+                    locations.forEachIndexed { index, item ->
+                        DropdownMenuItem(onClick = {
+                            selectedIndex.value = index
+                            showPopup = false
+                        }) {
+                            Text(text = item.name)
+                        }
                     }
                 }
             }
