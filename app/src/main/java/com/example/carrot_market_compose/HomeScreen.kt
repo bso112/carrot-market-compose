@@ -1,5 +1,7 @@
 package com.example.carrot_market_compose
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +33,7 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
@@ -55,6 +59,7 @@ import com.example.carrot_market_compose.data.Location
 import com.example.carrot_market_compose.data.Post
 import com.example.carrot_market_compose.data.fakePost
 import com.example.carrot_market_compose.data.fakePostList
+import com.example.carrot_market_compose.design.dim
 import com.example.carrot_market_compose.ui.theme.CarrotmarketcomposeTheme
 import kotlinx.coroutines.flow.Flow
 
@@ -67,10 +72,13 @@ fun HomeScreen(
     onMenuClick: () -> Unit,
     onPostClick: (Post) -> Unit = {}
 ) {
+    var isShowDim by remember { mutableStateOf(false) }
     Scaffold(
         modifier = Modifier.background(color = Color.White),
         topBar = {
             HomeTobBar(
+                onShowDropDown = { isShowDim = true },
+                onDismissDropDown = { isShowDim = false },
                 onNoticeClick = onNoticeClick,
                 onMenuClick = onMenuClick,
                 onSearchClick = onSearchClick,
@@ -96,8 +104,26 @@ fun HomeScreen(
             }
         }
     }
+
+    DimScreen(isShowDim = isShowDim)
 }
 
+@Composable
+fun DimScreen(
+    isShowDim: Boolean
+) {
+    val alpha: Float by animateFloatAsState(
+        targetValue = if (isShowDim) 1f else 0f,
+        animationSpec = tween(durationMillis = 500)
+    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer(alpha = alpha)
+            .background(color = Color.dim)
+    )
+}
 
 @Composable
 fun PostListItem(
@@ -186,6 +212,8 @@ fun HomeTobBar(
     onSearchClick: () -> Unit,
     onMenuClick: () -> Unit,
     onNoticeClick: () -> Unit,
+    onShowDropDown: () -> Unit,
+    onDismissDropDown: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column {
@@ -197,7 +225,11 @@ fun HomeTobBar(
                 .padding(horizontal = 10.dp, vertical = 10.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                DropDown(locations = locations)
+                DropDown(
+                    locations = locations,
+                    onShowDropDown = onShowDropDown,
+                    onDismissDropDown = onDismissDropDown
+                )
                 Spacer(modifier = Modifier.weight(1f))
                 IconButton(onClick = onSearchClick) {
                     Icon(Icons.Outlined.Search, contentDescription = null)
@@ -216,7 +248,11 @@ fun HomeTobBar(
 
 
 @Composable
-private fun DropDown(locations: List<Location>) {
+private fun DropDown(
+    locations: List<Location>,
+    onShowDropDown: () -> Unit,
+    onDismissDropDown: () -> Unit,
+) {
     var showPopup by remember { mutableStateOf(false) }
     val selectedIndex = remember { mutableStateOf(0) }
     Column {
@@ -233,6 +269,7 @@ private fun DropDown(locations: List<Location>) {
             Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
         }
         if (showPopup) {
+            onShowDropDown()
             Box(
                 modifier = Modifier.wrapContentSize(),
                 contentAlignment = Alignment.Center
@@ -252,6 +289,8 @@ private fun DropDown(locations: List<Location>) {
                     }
                 }
             }
+        } else {
+            onDismissDropDown()
         }
     }
 }
