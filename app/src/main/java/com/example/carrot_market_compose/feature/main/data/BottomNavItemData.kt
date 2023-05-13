@@ -6,7 +6,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.ui.graphics.vector.ImageVector
 
 
-enum class BottomNavType(
+enum class TopLevelDestination(
     val selectedImage: ImageVector,
     val deselectedImage: ImageVector,
     val title: String,

@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
@@ -54,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -64,11 +63,23 @@ import com.example.carrot_market_compose.data.Post
 import com.example.carrot_market_compose.data.fakePost
 import com.example.carrot_market_compose.data.fakePostList
 import com.example.carrot_market_compose.design.dim
-import com.example.carrot_market_compose.feature.main.data.BottomNavType
 import com.example.carrot_market_compose.noRippleClickable
 import com.example.carrot_market_compose.ui.theme.CarrotmarketcomposeTheme
 import kotlinx.coroutines.flow.Flow
 
+@Composable
+fun HomeRoute(
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val posts = viewModel.posts
+    HomeScreen(
+        posts = posts,
+        onNoticeClick = {},
+        onSearchClick = {},
+        onMenuClick = {},
+        onPostClick = {}
+    )
+}
 
 @Composable
 fun HomeScreen(
@@ -76,7 +87,7 @@ fun HomeScreen(
     onNoticeClick: () -> Unit,
     onSearchClick: () -> Unit,
     onMenuClick: () -> Unit,
-    onPostClick: (Post) -> Unit = {}
+    onPostClick: (Post) -> Unit
 ) {
     var isShowDim by remember { mutableStateOf(false) }
     Scaffold(
@@ -90,9 +101,6 @@ fun HomeScreen(
                 onSearchClick = onSearchClick,
                 locations = listOf(Location("신림동"), Location("강서구"))
             )
-        },
-        bottomBar = {
-            HomeBottomNavigation()
         }
     ) { padding ->
         val pagingItems: LazyPagingItems<Post> = posts.collectAsLazyPagingItems()
@@ -118,30 +126,6 @@ fun HomeScreen(
 }
 
 
-@Composable
-fun HomeBottomNavigation() {
-    var selectedItemIndex by remember { mutableStateOf(0) }
-    BottomNavigation {
-        BottomNavType.values().mapIndexed { index, type ->
-            val isSelected = index == selectedItemIndex
-            BottomNavigationItem(
-                selected = isSelected,
-                icon = {
-                    Icon(
-                        imageVector = if (isSelected) type.selectedImage else type.deselectedImage,
-                        contentDescription = null
-                    )
-                },
-                label = {
-                    Text(text = type.title)
-                },
-                onClick = {
-                    selectedItemIndex = index
-                }
-            )
-        }
-    }
-}
 
 @Composable
 fun DimScreen(
