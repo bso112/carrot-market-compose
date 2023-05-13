@@ -41,11 +41,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -255,6 +257,8 @@ private fun DropDown(
 ) {
     var showPopup by remember { mutableStateOf(false) }
     val selectedIndex = remember { mutableStateOf(0) }
+
+
     Column {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -266,7 +270,7 @@ private fun DropDown(
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
-            Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+            DropDownIcon(showPopup)
         }
         if (showPopup) {
             onShowDropDown()
@@ -284,7 +288,13 @@ private fun DropDown(
                             selectedIndex.value = index
                             showPopup = false
                         }) {
-                            Text(text = item.name)
+                            Text(
+                                text = item.name,
+                                style = TextStyle(
+                                    color = if (index == selectedIndex.value) Color.Black else Color.DarkGray,
+                                    fontWeight = if (index == selectedIndex.value) FontWeight.Bold else FontWeight.Normal
+                                )
+                            )
                         }
                     }
                 }
@@ -295,6 +305,22 @@ private fun DropDown(
     }
 }
 
+@Composable
+private fun DropDownIcon(isShowDropDown : Boolean){
+    val degree: Float by animateFloatAsState(
+        targetValue = if (isShowDropDown) 180f else 0f,
+        animationSpec = tween(durationMillis = 500)
+    )
+
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+            .rotate(degree)
+    ){
+        Icon(Icons.Outlined.ArrowDropDown, contentDescription = null)
+    }
+
+}
 
 @Preview(showBackground = true)
 @Composable
