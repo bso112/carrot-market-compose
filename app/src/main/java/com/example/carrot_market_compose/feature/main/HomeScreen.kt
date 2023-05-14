@@ -27,6 +27,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.ArrowDropDown
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.Menu
@@ -59,10 +60,10 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.example.carrot_market_compose.R
 import com.example.carrot_market_compose.data.Location
-import com.example.carrot_market_compose.data.Post
 import com.example.carrot_market_compose.data.fakePost
 import com.example.carrot_market_compose.data.fakePostList
 import com.example.carrot_market_compose.design.dim
+import com.example.carrot_market_compose.feature.main.data.Post
 import com.example.carrot_market_compose.noRippleClickable
 import com.example.carrot_market_compose.ui.theme.CarrotmarketcomposeTheme
 import kotlinx.coroutines.flow.Flow
@@ -126,7 +127,6 @@ fun HomeScreen(
 }
 
 
-
 @Composable
 fun DimScreen(
     isShowDim: Boolean
@@ -165,8 +165,7 @@ fun PostListItem(
                 .height(dimensionResource(id = R.dimen.post_item_size))
                 .width(dimensionResource(id = R.dimen.post_item_size))
                 .clip(RoundedCornerShape(size = 10.dp)),
-            contentScale = ContentScale.Crop,
-
+            contentScale = ContentScale.Crop
             )
         Column(
             modifier = Modifier.padding(start = 10.dp)
@@ -210,7 +209,7 @@ fun PostListItem(
                 modifier = Modifier.align(Alignment.End)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Favorite,
+                    imageVector = if (post.isLike) Icons.Outlined.Favorite else Icons.Filled.Favorite,
                     tint = Color.DarkGray,
                     contentDescription = null
                 )
