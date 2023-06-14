@@ -23,7 +23,8 @@ val fakePost = Post(
     chatCount = 3,
     viewCount = 4,
     mannerTemperature = 5,
-    writer = fakeUser
+    writer = fakeUser,
+    location = Location(fakeUser.location)
 )
 
 val fakePostList = flowOf(

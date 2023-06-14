@@ -1,5 +1,8 @@
 package com.example.carrot_market_compose.feature.main.data
 
+import com.example.carrot_market_compose.data.Location
+
+
 data class Post(
     val id: String,
     val title: String,
@@ -11,5 +14,6 @@ data class Post(
     val likeCount: Int,
     val chatCount: Int,
     val viewCount: Int,
-    val mannerTemperature: Int
+    val mannerTemperature: Int,
+    val location : Location
 )

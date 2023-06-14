@@ -179,7 +179,7 @@ fun PostListItem(
             )
             Row {
                 Text(
-                    text = post.location,
+                    text = post.location.name,
                     maxLines = 1,
                     modifier = Modifier
                         .wrapContentSize(),

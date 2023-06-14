@@ -5,9 +5,10 @@ import androidx.paging.PagingData
 import com.example.carrot_market_compose.data.fakePost
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.flowOf
+import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel : ViewModel() {
+class HomeViewModel @Inject constructor(): ViewModel() {
 
     val posts = flowOf(
         PagingData.from(
